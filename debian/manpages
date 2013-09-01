@@ -1,0 +1,9 @@
+debian/whisper-create.1
+debian/whisper-resize.1
+debian/rrd2whisper.1
+debian/whisper-update.1
+debian/whisper-info.1
+debian/whisper-fetch.1
+debian/whisper-set-aggregation-method.1
+debian/whisper-dump.1
+debian/whisper-merge.1
