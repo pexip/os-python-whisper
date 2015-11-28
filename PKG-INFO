@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: whisper
-Version: 0.9.12
+Version: 0.9.15
 Summary: Fixed size round-robin style database
 Home-page: http://graphite-project.github.com/
 Author: Chris Davis

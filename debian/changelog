@@ -1,3 +1,38 @@
+python-whisper (0.9.15-1) unstable; urgency=medium
+
+  * Team upload.
+  * Imported Upstream version 0.9.15
+
+ -- Jonas Genannt <genannt@debian.org>  Sat, 28 Nov 2015 10:29:45 +0100
+
+python-whisper (0.9.14-1) unstable; urgency=medium
+
+  * Imported Upstream version 0.9.14
+  * d/rules: add execute perms to whisper-diff
+
+ -- Jonas Genannt <genannt@debian.org>  Fri, 20 Nov 2015 23:39:38 +0100
+
+python-whisper (0.9.13-2) unstable; urgency=medium
+
+  * Team upload.
+  * upload to unstable
+  * d/control: switched my mailadresse to @debian.org
+
+ -- Jonas Genannt <genannt@debian.org>  Sat, 02 May 2015 19:25:16 +0200
+
+python-whisper (0.9.13-1) experimental; urgency=low
+
+  * Imported Upstream version 0.9.13
+  * d/control:
+    - changed Vcs to Graphite pkg project git
+    - bumped standards version to 3.9.6 (no changes needed)
+  * d/watch: updated watch url
+  * d/copyright: updated year of copyright
+  * Changed package to pybuild tools
+  * added manpage for whisper-fill
+
+ -- Jonas Genannt <jonas.genannt@capi2name.de>  Sun, 01 Feb 2015 16:18:36 +0100
+
 python-whisper (0.9.12-1) unstable; urgency=low
 
   [ Jakub Wilk ]

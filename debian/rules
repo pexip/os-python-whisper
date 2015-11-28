@@ -1,8 +1,9 @@
 #!/usr/bin/make -f
 
 %:
-	dh $@ --with python2
+	dh $@ --with python2 --buildsystem=pybuild
 
 override_dh_install:
 	rename 's/\.py//' debian/python-whisper/usr/bin/*.py
+	chmod +x  debian/python-whisper/usr/bin/whisper-diff
 	dh_install
