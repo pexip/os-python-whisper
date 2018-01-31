@@ -1,3 +1,9 @@
+python-whisper (0.9.12-1pexip1) pexip; urgency=medium
+
+  * Prepare Pexip packaging
+
+ -- John-Mark Bell <jmb@pexip.com>  Wed, 31 Jan 2018 14:31:20 +0000
+
 python-whisper (0.9.12-1) unstable; urgency=low
 
   [ Jakub Wilk ]

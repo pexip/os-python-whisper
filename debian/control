@@ -1,13 +1,15 @@
 Source: python-whisper
 Section: python
 Priority: optional
-Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
-Uploaders: Elliot Murphy <elliot@ubuntu.com>, Jonas Genannt <jonas.genannt@capi2name.de>
+Maintainer: Pexip AS <packaging@pexip.com>
+XSBC-Pexip-Original-Maintainer: Debian Python Modules Team <python-modules-team@lists.alioth.debian.org>
+XSBC-Pexip-Original-Uploaders: Elliot Murphy <elliot@ubuntu.com>, Jonas Genannt <jonas.genannt@capi2name.de>
 Build-Depends: debhelper (>= 8), python (>= 2.6.6-3~), perl
 Standards-Version: 3.9.4
 Homepage: https://github.com/graphite-project/whisper
 Vcs-Svn: svn://anonscm.debian.org/python-modules/packages/python-whisper/trunk/
 Vcs-Browser: http://anonscm.debian.org/viewvc/python-modules/packages/python-whisper/trunk/
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ jessie
 
 Package: python-whisper
 Architecture: all
