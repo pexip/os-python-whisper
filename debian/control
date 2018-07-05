@@ -9,7 +9,7 @@ Standards-Version: 3.9.4
 Homepage: https://github.com/graphite-project/whisper
 Vcs-Svn: svn://anonscm.debian.org/python-modules/packages/python-whisper/trunk/
 Vcs-Browser: http://anonscm.debian.org/viewvc/python-modules/packages/python-whisper/trunk/
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ jessie
+XS-Pexip-Upstream: http://ftp.debian.org/debian/ stretch
 
 Package: python-whisper
 Architecture: all
