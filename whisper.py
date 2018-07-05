@@ -25,6 +25,7 @@
 #			Point = timestamp,value
 
 import os, struct, time, operator, itertools
+from errno import ENOSPC
 
 try:
   import fcntl
@@ -256,34 +257,32 @@ def setAggregationMethod(path, aggregationMethod):
 path is a string
 aggregationMethod specifies the method to use when propogating data (see ``whisper.aggregationMethods``)
 """
-  fh = open(path,'r+b')
-  if LOCK:
-    fcntl.flock( fh.fileno(), fcntl.LOCK_EX )
+  with open(path,'r+b') as fh:
+    if LOCK:
+      fcntl.flock( fh.fileno(), fcntl.LOCK_EX )
 
-  packedMetadata = fh.read(metadataSize)
+    packedMetadata = fh.read(metadataSize)
 
-  try:
-    (aggregationType,maxRetention,xff,archiveCount) = struct.unpack(metadataFormat,packedMetadata)
-  except:
-    raise CorruptWhisperFile("Unable to read header", fh.name)
+    try:
+      (aggregationType,maxRetention,xff,archiveCount) = struct.unpack(metadataFormat,packedMetadata)
+    except:
+      raise CorruptWhisperFile("Unable to read header", fh.name)
 
-  try:
-    newAggregationType = struct.pack( longFormat, aggregationMethodToType[aggregationMethod] )
-  except KeyError:
-    raise InvalidAggregationMethod("Unrecognized aggregation method: %s" %
-          aggregationMethod)
+    try:
+      newAggregationType = struct.pack( longFormat, aggregationMethodToType[aggregationMethod] )
+    except KeyError:
+      raise InvalidAggregationMethod("Unrecognized aggregation method: %s" %
+            aggregationMethod)
 
-  fh.seek(0)
-  fh.write(newAggregationType)
+    fh.seek(0)
+    fh.write(newAggregationType)
 
-  if AUTOFLUSH:
-    fh.flush()
-    os.fsync(fh.fileno())
+    if AUTOFLUSH:
+      fh.flush()
+      os.fsync(fh.fileno())
 
-  if CACHE_HEADERS and fh.name in __headerCache:
-    del __headerCache[fh.name]
-
-  fh.close()
+    if CACHE_HEADERS and fh.name in __headerCache:
+      del __headerCache[fh.name]
 
   return aggregationTypeToMethod.get(aggregationType, 'average')
 
@@ -360,47 +359,59 @@ aggregationMethod specifies the function to use when propogating data (see ``whi
   if os.path.exists(path):
     raise InvalidConfiguration("File %s already exists!" % path)
 
-  fh = open(path,'wb')
-  if LOCK:
-    fcntl.flock( fh.fileno(), fcntl.LOCK_EX )
+  with open(path,'wb') as fh:
+    try:
+      if LOCK:
+        fcntl.flock( fh.fileno(), fcntl.LOCK_EX )
+  
+      aggregationType = struct.pack( longFormat, aggregationMethodToType.get(aggregationMethod, 1) )
+      oldest = max([secondsPerPoint * points for secondsPerPoint,points in archiveList])
+      maxRetention = struct.pack( longFormat, oldest )
+      xFilesFactor = struct.pack( floatFormat, float(xFilesFactor) )
+      archiveCount = struct.pack(longFormat, len(archiveList))
+      packedMetadata = aggregationType + maxRetention + xFilesFactor + archiveCount
+      fh.write(packedMetadata)
+      headerSize = metadataSize + (archiveInfoSize * len(archiveList))
+      archiveOffsetPointer = headerSize
+  
+      for secondsPerPoint,points in archiveList:
+        archiveInfo = struct.pack(archiveInfoFormat, archiveOffsetPointer, secondsPerPoint, points)
+        fh.write(archiveInfo)
+        archiveOffsetPointer += (points * pointSize)
+  
+      #If configured to use fallocate and capable of fallocate use that, else
+      #attempt sparse if configure or zero pre-allocate if sparse isn't configured.
+      if CAN_FALLOCATE and useFallocate:
+        remaining = archiveOffsetPointer - headerSize
+        fallocate(fh, headerSize, remaining)
+      elif sparse:
+        fh.seek(archiveOffsetPointer - 1)
+        fh.write('\x00')
+      else:
+        remaining = archiveOffsetPointer - headerSize
+        chunksize = 16384
+        zeroes = '\x00' * chunksize
+        while remaining > chunksize:
+          fh.write(zeroes)
+          remaining -= chunksize
+        fh.write(zeroes[:remaining])
+  
+      if AUTOFLUSH:
+        fh.flush()
+        os.fsync(fh.fileno())
+  
+      fh.close()
+    except IOError, e:
+      try:
+        # if we got an IOError above, the file is either empty or half created.
+        # Better off deleting it to avoid surprises later
+        os.unlink(fh.name)
+      finally:
+        # double close is ok - the first one is needed to catch ENOSPC on close
+        # This one closes the file if we caught an IOError higher up
+        fh.close()
+      raise
 
-  aggregationType = struct.pack( longFormat, aggregationMethodToType.get(aggregationMethod, 1) )
-  oldest = max([secondsPerPoint * points for secondsPerPoint,points in archiveList])
-  maxRetention = struct.pack( longFormat, oldest )
-  xFilesFactor = struct.pack( floatFormat, float(xFilesFactor) )
-  archiveCount = struct.pack(longFormat, len(archiveList))
-  packedMetadata = aggregationType + maxRetention + xFilesFactor + archiveCount
-  fh.write(packedMetadata)
-  headerSize = metadataSize + (archiveInfoSize * len(archiveList))
-  archiveOffsetPointer = headerSize
-
-  for secondsPerPoint,points in archiveList:
-    archiveInfo = struct.pack(archiveInfoFormat, archiveOffsetPointer, secondsPerPoint, points)
-    fh.write(archiveInfo)
-    archiveOffsetPointer += (points * pointSize)
-
-  #If configured to use fallocate and capable of fallocate use that, else
-  #attempt sparse if configure or zero pre-allocate if sparse isn't configured.
-  if CAN_FALLOCATE and useFallocate:
-    remaining = archiveOffsetPointer - headerSize
-    fallocate(fh, headerSize, remaining)
-  elif sparse:
-    fh.seek(archiveOffsetPointer - 1)
-    fh.write('\x00')
-  else:
-    remaining = archiveOffsetPointer - headerSize
-    chunksize = 16384
-    zeroes = '\x00' * chunksize
-    while remaining > chunksize:
-      fh.write(zeroes)
-      remaining -= chunksize
-    fh.write(zeroes[:remaining])
-
-  if AUTOFLUSH:
-    fh.flush()
-    os.fsync(fh.fileno())
-
-  fh.close()
 
 def aggregate(aggregationMethod, knownValues):
   if aggregationMethod == 'average':
@@ -507,8 +518,8 @@ value is a float
 timestamp is either an int or float
 """
   value = float(value)
-  fh = open(path,'r+b')
-  return file_update(fh, value, timestamp)
+  with open(path,'r+b') as fh:
+    return file_update(fh, value, timestamp)
 
 
 def file_update(fh, value, timestamp):
@@ -561,8 +572,6 @@ def file_update(fh, value, timestamp):
     fh.flush()
     os.fsync(fh.fileno())
 
-  fh.close()
-
 
 def update_many(path,points):
   """update_many(path,points)
@@ -573,8 +582,8 @@ points is a list of (timestamp,value) points
   if not points: return
   points = [ (int(t),float(v)) for (t,v) in points]
   points.sort(key=lambda p: p[0],reverse=True) #order points by timestamp, newest first
-  fh = open(path,'r+b')
-  return file_update_many(fh, points)
+  with open(path,'r+b') as fh:
+    return file_update_many(fh, points)
 
 
 def file_update_many(fh, points):
@@ -614,19 +623,21 @@ def file_update_many(fh, points):
     fh.flush()
     os.fsync(fh.fileno())
 
-  fh.close()
-
 
 def __archive_update_many(fh,header,archive,points):
   step = archive['secondsPerPoint']
   alignedPoints = [ (timestamp - (timestamp % step), value)
                     for (timestamp,value) in points ]
-  alignedPoints = dict(alignedPoints).items() # Take the last val of duplicates
   #Create a packed string for each contiguous sequence of points
   packedStrings = []
   previousInterval = None
   currentString = ""
-  for (interval,value) in alignedPoints:
+  lenAlignedPoints = len(alignedPoints)
+  for i in xrange(0,lenAlignedPoints):
+    #take last point in run of points with duplicate intervals
+    if i+1 < lenAlignedPoints and alignedPoints[i][0] == alignedPoints[i+1][0]:
+      continue
+    (interval,value) = alignedPoints[i]
     if (not previousInterval) or (interval == previousInterval + step):
       currentString += struct.pack(pointFormat,interval,value)
       previousInterval = interval
@@ -689,13 +700,12 @@ def info(path):
 
 path is a string
 """
-  fh = open(path,'rb')
-  info = __readHeader(fh)
-  fh.close()
+  with open(path,'rb') as fh:
+    info = __readHeader(fh)
   return info
 
 
-def fetch(path,fromTime,untilTime=None):
+def fetch(path,fromTime,untilTime=None,now=None):
   """fetch(path,fromTime,untilTime=None)
 
 path is a string
@@ -707,13 +717,14 @@ where timeInfo is itself a tuple of (fromTime, untilTime, step)
 
 Returns None if no data can be returned
 """
-  fh = open(path,'rb')
-  return file_fetch(fh, fromTime, untilTime)
+  with open(path,'rb') as fh:
+    return file_fetch(fh, fromTime, untilTime, now)
 
 
-def file_fetch(fh, fromTime, untilTime):
+def file_fetch(fh, fromTime, untilTime, now = None):
   header = __readHeader(fh)
-  now = int( time.time() )
+  if now is None:
+    now = int( time.time() )
   if untilTime is None:
     untilTime = now
   fromTime = int(fromTime)
@@ -746,6 +757,10 @@ def file_fetch(fh, fromTime, untilTime):
 
   fromInterval = int( fromTime - (fromTime % archive['secondsPerPoint']) ) + archive['secondsPerPoint']
   untilInterval = int( untilTime - (untilTime % archive['secondsPerPoint']) ) + archive['secondsPerPoint']
+  if fromInterval == untilInterval:
+    # Check for zero-length time rages and always include the next point
+    untilInterval = untilInterval + archive['secondsPerPoint']
+
   fh.seek(archive['offset'])
   packedPoint = fh.read(pointSize)
   (baseInterval,baseValue) = struct.unpack(pointFormat,packedPoint)
@@ -797,7 +812,6 @@ def file_fetch(fh, fromTime, untilTime):
       valueList[i/2] = pointValue #in-place reassignment is faster than append()
     currentInterval += step
 
-  fh.close()
   timeInfo = (fromInterval,untilInterval,step)
   return (timeInfo,valueList)
 
@@ -826,4 +840,48 @@ def merge(path_from, path_to, step=1<<12):
       pointsToWrite.sort(key=lambda p: p[0],reverse=True) #order points by timestamp, newest first
       update_many(path_to, pointsToWrite)
       fromTime = untilTime
+
+def diff(path_from, path_to, ignore_empty = False):
+  """ Compare two whisper databases. Each file must have the same archive configuration """
+  fh_from = open(path_from, 'rb')
+  fh_to = open(path_to, 'rb')
+  diffs = file_diff(fh_from, fh_to, ignore_empty)
+  fh_to.close()
+  fh_from.close()
+  return diffs
+
+def file_diff(fh_from, fh_to, ignore_empty = False):
+  headerFrom = __readHeader(fh_from)
+  headerTo = __readHeader(fh_to)
+
+  if headerFrom['archives'] != headerTo['archives']:
+    raise NotImplementedError("%s and %s archive configurations are unalike. " \
+                                "Resize the input before diffing" % (fh_from.name, fh_to.name))
+
+  archives = headerFrom['archives']
+  archives.sort(key=operator.itemgetter('retention'))
+
+  archive_diffs = []
+
+  now = int(time.time())
+  untilTime = now
+  for archive_number, archive in enumerate(archives):
+    diffs = []
+    startTime = now - archive['retention']
+    (fromTimeInfo, fromValues) = __archive_fetch(fh_from, archive, startTime, untilTime)
+    (toTimeInfo, toValues) = __archive_fetch(fh_to, archive, startTime, untilTime)
+    (start, end, archive_step) = ( min(fromTimeInfo[0],toTimeInfo[0]), max(fromTimeInfo[1],toTimeInfo[1]), min(fromTimeInfo[2],toTimeInfo[2]) )
+
+    points = map(lambda s: (s * archive_step + start,fromValues[s],toValues[s]), range(0,(end - start) / archive_step))
+    if ignore_empty:
+      points = [p for p in points if p[1] != None and p[2] != None]
+    else:
+      points = [p for p in points if p[1] != None or p[2] != None]
+
+    diffs = [p for p in points if p[1] != p[2]]
+
+    archive_diffs.append( (archive_number, diffs, points.__len__()) )
+    untilTime = startTime
+  return archive_diffs
+
 #!/usr/bin/env python
