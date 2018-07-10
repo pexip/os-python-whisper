@@ -1,3 +1,9 @@
+python-whisper (0.9.15-1pexip1) pexip; urgency=medium
+
+  * Migrate to Stretch
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 10 Jul 2018 11:47:40 +0000
+
 python-whisper (0.9.15-1) unstable; urgency=medium
 
   * Team upload.
