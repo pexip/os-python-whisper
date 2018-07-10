@@ -1,0 +1,25 @@
+.TH WHISPER-FILL 1
+.SH NAME
+whisper-fill \- merge two whisper database files
+.SH SYNOPSYS
+.nf
+.fam C
+\fbwhisper-fill\fP src dst
+.fam T
+.fi
+.SH DESCRIPTION
+This command merges two whisper database files.
+Acts like whisper-merge, but don't overwrite data that is already
+present in the target file. whisper-fill adds only the missing data.
+.PP
+The options are described below.
+.SH OPTIONS
+.TP
+.B
+\-h, \-\-help
+Show the embedded help.
+.SH AUTHOR
+\fBwhisper\fP is a fixed size database, created by Chris Davis.
+.PP
+This manual page was written by Jonas Genannt <jonas.genannt@capi2name.de>, for
+the Debian project (but may be used by others).
