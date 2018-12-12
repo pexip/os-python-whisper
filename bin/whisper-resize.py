@@ -2,7 +2,6 @@
 
 import os
 import sys
-import math
 import time
 import bisect
 import signal
@@ -54,14 +53,14 @@ option_parser.add_option(
 (options, args) = option_parser.parse_args()
 
 if len(args) < 2:
-  option_parser.print_usage()
+  option_parser.print_help()
   sys.exit(1)
 
 path = args[0]
 
 if not os.path.exists(path):
   sys.stderr.write("[ERROR] File '%s' does not exist!\n\n" % path)
-  option_parser.print_usage()
+  option_parser.print_help()
   sys.exit(1)
 
 info = whisper.info(path)
@@ -83,39 +82,39 @@ if options.aggregationMethod is None:
 else:
   aggregationMethod = options.aggregationMethod
 
-print 'Retrieving all data from the archives'
+print('Retrieving all data from the archives')
 for archive in old_archives:
   fromTime = now - archive['retention'] + archive['secondsPerPoint']
   untilTime = now
-  timeinfo,values = whisper.fetch(path, fromTime, untilTime)
-  archive['data'] = (timeinfo,values)
+  timeinfo, values = whisper.fetch(path, fromTime, untilTime)
+  archive['data'] = (timeinfo, values)
 
 if options.newfile is None:
   tmpfile = path + '.tmp'
   if os.path.exists(tmpfile):
-    print 'Removing previous temporary database file: %s' % tmpfile
+    print('Removing previous temporary database file: %s' % tmpfile)
     os.unlink(tmpfile)
   newfile = tmpfile
 else:
   newfile = options.newfile
 
-print 'Creating new whisper database: %s' % newfile
+print('Creating new whisper database: %s' % newfile)
 whisper.create(newfile, new_archives, xFilesFactor=xff, aggregationMethod=aggregationMethod)
 size = os.stat(newfile).st_size
-print 'Created: %s (%d bytes)' % (newfile,size)
+print('Created: %s (%d bytes)' % (newfile, size))
 
 if options.aggregate:
   # This is where data will be interpolated (best effort)
-  print 'Migrating data with aggregation...'
+  print('Migrating data with aggregation...')
   all_datapoints = []
   for archive in old_archives:
     # Loading all datapoints into memory for fast querying
     timeinfo, values = archive['data']
-    new_datapoints = zip( range(*timeinfo), values )
+    new_datapoints = zip(range(*timeinfo), values)
     if all_datapoints:
       last_timestamp = all_datapoints[-1][0]
       slice_end = 0
-      for i,(timestamp,value) in enumerate(new_datapoints):
+      for i, (timestamp, value) in enumerate(new_datapoints):
         if timestamp > last_timestamp:
           slice_end = i
           break
@@ -123,10 +122,10 @@ if options.aggregate:
     else:
       all_datapoints += new_datapoints
 
-  oldtimestamps = map( lambda p: p[0], all_datapoints)
-  oldvalues = map( lambda p: p[1], all_datapoints)
+  oldtimestamps = map(lambda p: p[0], all_datapoints)
+  oldvalues = map(lambda p: p[1], all_datapoints)
 
-  print "oldtimestamps: %s" % oldtimestamps
+  print("oldtimestamps: %s" % oldtimestamps)
   # Simply cleaning up some used memory
   del all_datapoints
 
@@ -137,11 +136,11 @@ if options.aggregate:
     step = archive['secondsPerPoint']
     fromTime = now - archive['retention'] + now % step
     untilTime = now + now % step + step
-    print "(%s,%s,%s)" % (fromTime,untilTime, step)
+    print("(%s,%s,%s)" % (fromTime, untilTime, step))
     timepoints_to_update = range(fromTime, untilTime, step)
-    print "timepoints_to_update: %s" % timepoints_to_update
+    print("timepoints_to_update: %s" % timepoints_to_update)
     newdatapoints = []
-    for tinterval in zip( timepoints_to_update[:-1], timepoints_to_update[1:] ):
+    for tinterval in zip(timepoints_to_update[:-1], timepoints_to_update[1:]):
       # TODO: Setting lo= parameter for 'lefti' based on righti from previous
       #       iteration. Obviously, this can only be done if
       #       timepoints_to_update is always updated. Is it?
@@ -149,17 +148,17 @@ if options.aggregate:
       righti = bisect.bisect_left(oldtimestamps, tinterval[1], lo=lefti)
       newvalues = oldvalues[lefti:righti]
       if newvalues:
-        non_none = filter( lambda x: x is not None, newvalues)
-        if 1.0*len(non_none)/len(newvalues) >= xff:
+        non_none = filter(lambda x: x is not None, newvalues)
+        if 1.0 * len(non_none) / len(newvalues) >= xff:
           newdatapoints.append([tinterval[0],
                                 whisper.aggregate(aggregationMethod,
-                                                  non_none)])
+                                                  non_none, newvalues)])
     whisper.update_many(newfile, newdatapoints)
 else:
-  print 'Migrating data without aggregation...'
+  print('Migrating data without aggregation...')
   for archive in old_archives:
     timeinfo, values = archive['data']
-    datapoints = zip( range(*timeinfo), values )
+    datapoints = zip(range(*timeinfo), values)
     datapoints = filter(lambda p: p[1] is not None, datapoints)
     whisper.update_many(newfile, datapoints)
 
@@ -167,18 +166,18 @@ if options.newfile is not None:
   sys.exit(0)
 
 backup = path + '.bak'
-print 'Renaming old database to: %s' % backup
+print('Renaming old database to: %s' % backup)
 os.rename(path, backup)
 
 try:
-  print 'Renaming new database to: %s' % path
+  print('Renaming new database to: %s' % path)
   os.rename(tmpfile, path)
-except:
+except (OSError, FileNotFoundError, PermissionError):
   traceback.print_exc()
-  print '\nOperation failed, restoring backup'
+  print('\nOperation failed, restoring backup')
   os.rename(backup, path)
   sys.exit(1)
 
 if options.nobackup:
-  print "Unlinking backup: %s" % backup
+  print("Unlinking backup: %s" % backup)
   os.unlink(backup)

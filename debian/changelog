@@ -1,3 +1,36 @@
+python-whisper (1.1.4-2) unstable; urgency=medium
+
+  * Add Conflicts: python-whisper to make upgrades from Stretch possible.
+
+ -- Thomas Goirand <zigo@debian.org>  Wed, 12 Dec 2018 12:42:45 +0100
+
+python-whisper (1.1.4-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Added myself as uploader after discussing with current maintainer.
+  * Switch to Python 3.
+  * Ran wrap-and-sort -bast.
+
+ -- Thomas Goirand <zigo@debian.org>  Mon, 10 Dec 2018 15:13:54 +0100
+
+python-whisper (1.0.2-1+1) unstable; urgency=medium
+
+  * VCS move to salsa
+  * change maintainer to tracker list (closes: #899679 )
+
+ -- Christoph Martin <martin@uni-mainz.de>  Tue, 23 Oct 2018 10:03:35 +0200
+
+python-whisper (1.0.2-1) unstable; urgency=medium
+
+  * Imported Upstream version 1.0.2
+  * d/*.1: fixed spelling error
+  * d/control:
+    - Updated Homepage
+    - Bumped Standards/debhelper version
+    - Added rename to Build-Depends (Closes: #874368)
+
+ -- Jonas Genannt <genannt@debian.org>  Mon, 18 Sep 2017 15:01:11 +0200
+
 python-whisper (0.9.15-1) unstable; urgency=medium
 
   * Team upload.
