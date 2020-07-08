@@ -10,3 +10,6 @@ override_dh_install:
 	rename 's/\.py//' debian/python3-whisper/usr/bin/*.py
 	chmod +x  debian/python3-whisper/usr/bin/whisper-diff
 	dh_install
+	rm -rf debian/python-whisper/usr/bin
+	mkdir -p debian/whisper-bin/usr
+	mv -v debian/python3-whisper/usr/bin debian/whisper-bin/usr/bin

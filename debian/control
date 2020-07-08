@@ -25,12 +25,23 @@ Vcs-Git: https://salsa.debian.org/debian-graphite-team/python-whisper.git
 Vcs-Browser: https://salsa.debian.org/debian-graphite-team/python-whisper
 XS-Pexip-Upstream: http://ftp.debian.org/debian/ buster
 
+Package: whisper-bin
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python:Depends},
+ python3-whisper
+Description: database engine for fast, reliable fixed-sized databases (runtime scripts)
+ Whisper is a fixed size database, similar in design to the Round Robin
+ database tool (RRDtool). Whisper is used by the Graphite scalable real
+ time graphing system to store time-series data for later display. 
+
 Package: python-whisper
 Architecture: all
 Depends:
  ${misc:Depends},
  ${python:Depends},
-Conflicts: python3-whisper
+ python-whisper-bin
 Description: database engine for fast, reliable fixed-sized databases
  Whisper is a fixed size database, similar in design to the Round Robin
  database tool (RRDtool). Whisper is used by the Graphite scalable real
@@ -41,7 +52,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
-Conflicts: python-whisper
+ python-whisper-bin
 Description: database engine for fast, reliable fixed-sized databases
  Whisper is a fixed size database, similar in design to the Round Robin
  database tool (RRDtool). Whisper is used by the Graphite scalable real
