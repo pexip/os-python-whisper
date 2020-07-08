@@ -41,7 +41,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python:Depends},
- python-whisper-bin
+ whisper-bin
 Description: database engine for fast, reliable fixed-sized databases
  Whisper is a fixed size database, similar in design to the Round Robin
  database tool (RRDtool). Whisper is used by the Graphite scalable real
@@ -52,7 +52,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
- python-whisper-bin
+ whisper-bin
 Description: database engine for fast, reliable fixed-sized databases
  Whisper is a fixed size database, similar in design to the Round Robin
  database tool (RRDtool). Whisper is used by the Graphite scalable real

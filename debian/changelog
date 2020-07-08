@@ -2,7 +2,7 @@ python-whisper (1.1.4-2pexip2) pexip; urgency=medium
 
   * Switch to building both python-whisper and python3-whisper
   * Also move all the scripts and manpages into a new common
-    whisper-bin package so the two versions are no co-installable
+    whisper-bin package so the two versions are now co-installable
 
  -- Steve McIntyre <steve.mcintyre@pexip.com>  Wed, 24 Jun 2020 11:36:00 +0100
 
