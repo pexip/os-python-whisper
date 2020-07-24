@@ -31,6 +31,8 @@ Depends:
  ${misc:Depends},
  ${python:Depends},
  python3-whisper
+Breaks: python-whisper (<= 1.1.4-2pexip1)
+Replaces: python-whisper (<= 1.1.4-2pexip1)
 Description: database engine for fast, reliable fixed-sized databases (runtime scripts)
  Whisper is a fixed size database, similar in design to the Round Robin
  database tool (RRDtool). Whisper is used by the Graphite scalable real

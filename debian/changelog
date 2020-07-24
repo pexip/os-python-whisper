@@ -1,3 +1,9 @@
+python-whisper (1.1.4-2pexip3) pexip; urgency=medium
+
+  * Add Breaks/Replaces to whisper-bin to make upgrades work.
+
+ -- Steve McIntyre <steve.mcintyre@pexip.com>  Fri, 24 Jul 2020 10:16:48 +0100
+
 python-whisper (1.1.4-2pexip2) pexip; urgency=medium
 
   * Switch to building both python-whisper and python3-whisper
