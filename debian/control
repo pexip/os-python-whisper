@@ -23,7 +23,7 @@ X-Python3-Version: all
 Homepage: https://graphiteapp.org/
 Vcs-Git: https://salsa.debian.org/debian-graphite-team/python-whisper.git
 Vcs-Browser: https://salsa.debian.org/debian-graphite-team/python-whisper
-XS-Pexip-Upstream: http://ftp.debian.org/debian/ buster
+XS-Pexip-Upstream: http://deb.debian.org/debian/ bullseye
 
 Package: whisper-bin
 Architecture: all
