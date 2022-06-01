@@ -1,3 +1,10 @@
+python-whisper (1.1.4-2.1) unstable; urgency=medium
+
+  * Non maintainer upload by the Reproducible Builds team.
+  * No source change upload to rebuild on buildd with .buildinfo files.
+
+ -- Holger Levsen <holger@debian.org>  Sun, 03 Jan 2021 16:43:40 +0100
+
 python-whisper (1.1.4-2pexip3) pexip; urgency=medium
 
   * Add Breaks/Replaces to whisper-bin to make upgrades work.
