@@ -15,7 +15,6 @@ Build-Depends:
  python3-setuptools,
  rename,
 Standards-Version: 4.1.2
-X-Python3-Version: all
 Homepage: https://graphiteapp.org/
 Vcs-Git: https://salsa.debian.org/debian-graphite-team/python-whisper.git
 Vcs-Browser: https://salsa.debian.org/debian-graphite-team/python-whisper
