@@ -6,15 +6,15 @@ Uploaders:
  Elliot Murphy <elliot@ubuntu.com>,
  Jonas Genannt <genannt@debian.org>,
  Thomas Goirand <zigo@debian.org>,
+ Alexandre Rossi <niol@zincube.net>,
 Build-Depends:
- debhelper (>= 9),
+ debhelper-compat (= 13),
  dh-python,
- perl,
  python3,
  python3-all,
  python3-setuptools,
  rename,
-Standards-Version: 4.1.2
+Standards-Version: 4.7.2.0
 Homepage: https://graphiteapp.org/
 Vcs-Git: https://salsa.debian.org/debian-graphite-team/python-whisper.git
 Vcs-Browser: https://salsa.debian.org/debian-graphite-team/python-whisper
@@ -24,7 +24,8 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python3:Depends},
-Conflicts: python-whisper
+Suggests:
+ python3-rrdtool,
 Description: database engine for fast, reliable fixed-sized databases
  Whisper is a fixed size database, similar in design to the Round Robin
  database tool (RRDtool). Whisper is used by the Graphite scalable real

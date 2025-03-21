@@ -1,0 +1,31 @@
+.TH FIND-CORRUPT-WHISPER-FILES 1
+.SH NAME
+find-corrupt-whisper-files \- Find and (optionally) delete corrupt Whisper data files
+.SH SYNOPSIS
+.nf
+.fam C
+\fBfind-corrupt-whisper-files\fP [-h] [--delete-corrupt] [--verbose] WHISPER_DIR [WHISPER_DIR ...]
+.fam T
+.fi
+.SH DESCRIPTION
+This command searches for corrupted whisper files in supplied directories.
+.PP
+The options are described below.
+.SH OPTIONS
+.TP
+.B
+\-\-delete-corrupt
+Delete reported files.
+.TP
+.B
+\-\-verbose
+Display progress info.
+.TP
+.B
+\-h, \-\-help
+Show the embedded help.
+.SH AUTHOR
+\fBwhisper\fP is a fixed size database, created by Chris Davis.
+.PP
+This manual page was written by Alexandre Rossi <niol@zincube.net>, for the Debian
+project (but may be used by others).

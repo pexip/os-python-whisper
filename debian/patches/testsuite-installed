@@ -1,0 +1,24 @@
+Author: Alexandre Rossi <niol@zincube.net>
+Description: Use installed binary for testsuite run by autpkgtest
+Forwarded: not-needed
+
+--- python-whisper.orig/test_whisper.py	2025-03-21 14:50:12.330193065 +0100
++++ python-whisper/test_whisper.py	2025-03-21 14:50:30.562542645 +0100
+@@ -831,7 +831,7 @@
+         for d in data[1]:
+             self.assertIsNotNone(d)
+         # resize from high to low
+-        os.system('whisper-resize.py %s 60s:1d 300s:2d --aggregate --nobackup >/dev/null' % self.filename)  # noqa
++        os.system('whisper-resize %s 60s:1d 300s:2d --aggregate --nobackup >/dev/null' % self.filename)  # noqa
+         data_low = whisper.fetch(
+             self.filename, fromTime=now_timestamp - 3600 * 25,
+             untilTime=now_timestamp - 3600 * 25 + 60 * 10)
+@@ -846,7 +846,7 @@
+         self.assertEqual(len(data_high[1]), 10)
+         self.assertEqual(data_high[0][2], 60)  # high retention == 60
+         # resize from low to high
+-        os.system('whisper-resize.py %s 60s:2d --aggregate --nobackup >/dev/null' % self.filename) # noqa
++        os.system('whisper-resize %s 60s:2d --aggregate --nobackup >/dev/null' % self.filename) # noqa
+         data1 = whisper.fetch(
+             self.filename, fromTime=now_timestamp - 3600 * 25,
+             untilTime=now_timestamp - 3600 * 25 + 60 * 10)

@@ -1,0 +1,47 @@
+.TH WHISPER-DIFF 1
+.SH NAME
+whisper-diff \- Check the differences between whisper files
+.SH SYNOPSIS
+.nf
+.fam C
+\fBwhisper-diff\fP [options] path_a path_b
+.fam T
+.fi
+.SH DESCRIPTION
+This command checks the differences between whisper files. This can be used as a sanity check before merging.
+.PP
+The options are described below.
+.SH OPTIONS
+.TP
+.B
+\-\-summary
+Show a summary of differences.
+.TP
+.B
+\-\-ignore-empty
+Skip comparison if either value is undefined.
+.TP
+.B
+\-\-columns
+Print output in simple columns.
+.TP
+.B
+\-\-no-headers
+Do not print column headers.
+.TP
+.B
+\-\-until=UNTIL
+Unix epoch time of the end of diffing request interval (default: now)
+.TP
+.B
+\-\-json
+Output results in JSON format.
+.TP
+.B
+\-h, \-\-help
+Show the embedded help.
+.SH AUTHOR
+\fBwhisper\fP is a fixed size database, created by Chris Davis.
+.PP
+This manual page was written by Alexandre Rossi <niol@zincube.net>, for the Debian
+project (but may be used by others).

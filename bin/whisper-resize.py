@@ -107,23 +107,25 @@ if options.aggregate:
   # This is where data will be interpolated (best effort)
   print('Migrating data with aggregation...')
   all_datapoints = []
-  for archive in old_archives:
+  for archive in sorted(old_archives, key=lambda x: x['secondsPerPoint']):
     # Loading all datapoints into memory for fast querying
     timeinfo, values = archive['data']
-    new_datapoints = zip(range(*timeinfo), values)
+    new_datapoints = list(zip(range(*timeinfo), values))
+    new_datapoints.reverse()
     if all_datapoints:
       last_timestamp = all_datapoints[-1][0]
       slice_end = 0
       for i, (timestamp, value) in enumerate(new_datapoints):
-        if timestamp > last_timestamp:
+        if timestamp < last_timestamp:
           slice_end = i
           break
-      all_datapoints += new_datapoints[i:]
+      all_datapoints += new_datapoints[slice_end:]
     else:
       all_datapoints += new_datapoints
+  all_datapoints.reverse()
 
-  oldtimestamps = map(lambda p: p[0], all_datapoints)
-  oldvalues = map(lambda p: p[1], all_datapoints)
+  oldtimestamps = list(map(lambda p: p[0], all_datapoints))
+  oldvalues = list(map(lambda p: p[1], all_datapoints))
 
   print("oldtimestamps: %s" % oldtimestamps)
   # Simply cleaning up some used memory
@@ -148,8 +150,8 @@ if options.aggregate:
       righti = bisect.bisect_left(oldtimestamps, tinterval[1], lo=lefti)
       newvalues = oldvalues[lefti:righti]
       if newvalues:
-        non_none = filter(lambda x: x is not None, newvalues)
-        if 1.0 * len(non_none) / len(newvalues) >= xff:
+        non_none = list(filter(lambda x: x is not None, newvalues))
+        if non_none and 1.0 * len(non_none) / len(newvalues) >= xff:
           newdatapoints.append([tinterval[0],
                                 whisper.aggregate(aggregationMethod,
                                                   non_none, newvalues)])
@@ -172,7 +174,7 @@ os.rename(path, backup)
 try:
   print('Renaming new database to: %s' % path)
   os.rename(tmpfile, path)
-except (OSError, FileNotFoundError, PermissionError):
+except (OSError):
   traceback.print_exc()
   print('\nOperation failed, restoring backup')
   os.rename(backup, path)

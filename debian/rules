@@ -5,6 +5,11 @@ export PYBUILD_NAME=whisper
 	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_install:
+	# update-storage-times does not work installed
+	rm debian/python3-whisper/usr/bin/update-storage-times.py
+	# whisper-auto-update needs to be edited to be usable (callback
+	# needs to be defined). Useless installed.
+	rm debian/python3-whisper/usr/bin/whisper-auto-update.py
 	rename 's/\.py//' debian/python3-whisper/usr/bin/*.py
-	chmod +x  debian/python3-whisper/usr/bin/whisper-diff
+	chmod +x  debian/python3-whisper/usr/bin/find-corrupt-whisper-files
 	dh_install

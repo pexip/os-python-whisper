@@ -1,0 +1,44 @@
+.TH WHISPER-AUTO-RESIZE 1
+.SH NAME
+whisper-auto-resize \- automatically change the retention rates of whisper files
+.SH SYNOPSIS
+.nf
+.fam C
+\fBwhisper-auto-resize\fP storagePath configPath
+.fam T
+.fi
+.SH DESCRIPTION
+This command automatically changes the retention rates (using \fBwhisper-resize(1)\fP of multiple whisper files according to provided whisper configuration.
+.PP
+The options are described below.
+.SH OPTIONS
+.TP
+.B
+\-\-doit
+Really act on files.
+.TP
+.B
+\-\-quiet
+Do not display debugging info.
+.TP
+.B
+\-\-subdir
+Only process a sub directory of whisper files.
+.TP
+.B
+\-\-confirm
+.TP
+.B
+\-x, \-\-extra-args
+pass extra arguments to \fBwhisper-resize(1)\fP 
+.TP
+.B
+\-h, \-\-help
+Show the embedded help.
+.SH SEE ALSO
+\fBwhisper-resize(1)\fP
+.SH AUTHOR
+\fBwhisper\fP is a fixed size database, created by Chris Davis.
+.PP
+This manual page was written by Alexandre Rossi <niol@zincube.net>, for the Debian
+project (but may be used by others).

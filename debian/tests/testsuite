@@ -1,0 +1,8 @@
+#!/bin/sh
+
+
+# force import of system installed whisper module by changing dir
+cp -a test_whisper.py "$AUTOPKGTEST_TMP"
+cd "$AUTOPKGTEST_TMP"
+
+python3 ./test_whisper.py
