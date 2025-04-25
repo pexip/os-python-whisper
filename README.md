@@ -1,22 +1,3 @@
-Metadata-Version: 2.1
-Name: whisper
-Version: 1.1.10
-Summary: Fixed size round-robin style database
-Home-page: http://graphiteapp.org/
-Author: Chris Davis
-Author-email: chrismd@gmail.com
-License: Apache Software License 2.0
-Classifier: Programming Language :: Python :: 2
-Classifier: Programming Language :: Python :: 2.7
-Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.5
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: Implementation :: CPython
-Classifier: Programming Language :: Python :: Implementation :: PyPy
-Description-Content-Type: text/markdown
-License-File: LICENSE
-
 # Whisper
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/f00d0b65802742e29de56f3744503ab0)](https://www.codacy.com/app/graphite-project/whisper?utm_source=github.com&utm_medium=referral&utm_content=graphite-project/whisper&utm_campaign=badger)
