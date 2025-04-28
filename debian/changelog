@@ -1,3 +1,28 @@
+python-whisper (1.1.10-1) unstable; urgency=medium
+
+  * Team upload.
+  * include nmus for 1.1.4-2.1 and 1.1.4-2.2 (Closes: #1023747)
+  * New upstream version 1.1.10 (Closes: #940799)
+  * fix d/watch
+  * configure pristine-tar
+  * add myself as uploader
+  * fix groff warnings for manpages
+  * debhelper-compat 13
+  * suggest python3-rrdtool (rrd2whisper dependency)
+  * update d/copyright to 2025
+  * remove useless perl build dep
+  * add missing manpages
+  * do not install useless contrib scripts, fix-up script perms
+  * whisper-auto-resize: avoid usage of distutils (deprecated)
+  * d/copyright: use license short name
+  * declare compliance to policy 4.7.2 (no change)
+  * drop obsolete python2 package Conflicts
+  * enable salsa-ci
+  * run testsuite as autopkgtest
+  * override lintian notices of scripts in non-app package
+
+ -- Alexandre Rossi <niol@zincube.net>  Fri, 21 Mar 2025 16:06:17 +0100
+
 python-whisper (1.1.4-2.2+pexip24u3) pexip-bookworm; urgency=medium
 
   * New versioning scheme

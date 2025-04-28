@@ -1,0 +1,3 @@
+# Package is primarily a Python module but also ships small helper scripts
+library-package-name-for-application [usr/bin/*]
+application-in-library-section python [usr/bin/*]
